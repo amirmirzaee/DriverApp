@@ -5,27 +5,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ManageActivity">
-    <include layout="@layout/general_toolbar"/>
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/general_toolbar" />
 
     <Switch
         android:id="@+id/switch1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="60dp"
         android:text="Switch"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="83dp"
+        app:layout_constraintEnd_toStartOf="@+id/textView2"
+        app:layout_constraintHorizontal_bias="0.561"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/include"
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:textColor="#000"
-        android:textSize="18sp"
-        android:textStyle="bold"
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="48dp"
+        android:layout_marginTop="60dp"
         android:text="@string/show_Traffic"
-        tools:layout_editor_absoluteX="188dp"
-        tools:layout_editor_absoluteY="90dp"
+        android:textColor="#000"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/include"
         tools:ignore="MissingConstraints" />
 
 

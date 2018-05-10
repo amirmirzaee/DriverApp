@@ -6,5 +6,6 @@
     <color name="coloron">#7fd769</color>
     <color name="coloroff">#ff4a42</color>
     <color name="trafficoff">#e1e0e0</color>
+    <color name="trafficon">#4a4ce6</color>
 
 </resources>

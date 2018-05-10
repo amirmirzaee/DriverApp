@@ -24,16 +24,20 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MainActivity extends RuntimePermissionsActivity implements OnMapReadyCallback, LocationListener, NavigationView.OnNavigationItemSelectedListener {
@@ -41,10 +45,12 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
     private GoogleMap mMap;
     private static final int ACCESS_PERMISSEN_LOCATION = 1;
     private DrawerLayout drawer;
-    private int onServies;
+    private int onServies,showTraffic,moonSun;
     private LocationManager locationManager;
     private static final long MIN_TIME = 400;
     private static final float MIN_DISTANCE = 1000;
+    private static final int Time_Between_Two_Back =2000;
+    private long TimeBackPressed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +59,8 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         makeNav();
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         onServies = 0;
+        showTraffic=0;
+        moonSun=0;
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -80,6 +88,19 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         mMap = googleMap;
 
         MainActivity.super.requestAppPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_PERMISSEN_LOCATION);
+
+
+//        boolean success = googleMap.setMapStyle(new MapStyleOptions(getResources()
+//                .getString(R.string.style_json)));
+//
+//        if (!success) {
+//            Log.e("TAG", "Style parsing failed.");
+//        }
+        // Position the map's camera near Sydney, Australia.
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(-34, 151)));
+
+
+
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
@@ -188,7 +209,7 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
         mMap.animateCamera(cameraUpdate);
         locationManager.removeUpdates(this);
-        mMap.setTrafficEnabled(true);
+
     }
 
     @Override
@@ -219,9 +240,9 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
                 if(onServies==0){
 //                fab.setImageResource(R.drawable.power_on);
                     fab.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#7fd769")));
-                Snackbar.make(view, "آماده برای انجام سرویس", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                onServies=1;
+                    Snackbar.make(view, "آماده برای انجام سرویس", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    onServies=1;
                 }
                 else
                 {
@@ -230,6 +251,71 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
                     Snackbar.make(view, "غیر فعال", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                     onServies=0;
+                }
+            }
+        });
+
+
+        final FloatingActionButton traf = (FloatingActionButton) findViewById(R.id.traffic);
+        traf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(showTraffic==0){
+//                fab.setImageResource(R.drawable.power_on);
+                    traf.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#4a4ce6")));
+                    Snackbar.make(view, "نمایش ترافیک", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    showTraffic=1;
+                    mMap.setTrafficEnabled(true);
+                }
+                else
+                {
+//                    fab.setImageResource(R.drawable.power_off);
+                    traf.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#e1e0e0")));
+                    Snackbar.make(view, "عدم نمایش ترافیک", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    showTraffic=0;
+                    mMap.setTrafficEnabled(false);
+                }
+            }
+        });
+
+
+        final FloatingActionButton msun = (FloatingActionButton) findViewById(R.id.nightmod);
+        msun.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(moonSun==0){
+//                    msun.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#4a4ce6")));
+                    msun.setImageResource(R.drawable.ic_brightness_3_black_24dp);
+//                    Snackbar.make(view, "نمایش ترافیک", Snackbar.LENGTH_LONG)
+//                            .setAction("Action", null).show();
+                    moonSun=1;
+
+                    boolean success = mMap.setMapStyle(new MapStyleOptions(getResources()
+                            .getString(R.string.style_json)));
+
+                    if (!success) {
+                        Log.e("TAG", "Style parsing failed.");
+                    }
+                }
+                else
+                {
+                    msun.setImageResource(R.drawable.ic_wb_sunny_black_24dp);
+//                    Snackbar.make(view, "عدم نمایش ترافیک", Snackbar.LENGTH_LONG)
+//                            .setAction("Action", null).show();
+                    moonSun=0;
+
+
+                    boolean success = mMap.setMapStyle(new MapStyleOptions(getResources()
+                            .getString(R.string.style2_json)));
+
+                    if (!success) {
+                        Log.e("TAG", "Style parsing failed.");
+                    }
+
+
+
                 }
             }
         });
@@ -250,7 +336,14 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         if (drawer.isDrawerOpen(GravityCompat.END)) {
             drawer.closeDrawer(GravityCompat.END);
         } else {
-            super.onBackPressed();
+            if(TimeBackPressed + Time_Between_Two_Back >System.currentTimeMillis()){
+                super.onBackPressed();
+                finish();
+                return;
+            }else{
+                Toast.makeText(getBaseContext(),"به منظور خروج دوباره کلیک کنید",Toast.LENGTH_SHORT).show();
+            }
+            TimeBackPressed =System.currentTimeMillis();
         }
     }
 
