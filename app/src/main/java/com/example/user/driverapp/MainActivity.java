@@ -11,6 +11,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -51,6 +52,8 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
     private static final float MIN_DISTANCE = 1000;
     private static final int Time_Between_Two_Back =2000;
     private long TimeBackPressed;
+    private boolean loop_started;
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +68,7 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+//        getLocation();
 
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -78,9 +82,9 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this); //You can also use LocationManager.GPS_PROVIDER and LocationManager.PASSIVE_PROVIDER
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, this); //You can also use LocationManager.GPS_PROVIDER and LocationManager.PASSIVE_PROVIDER
 
-
+        loopStart();
     }
 
     @Override
@@ -190,26 +194,14 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
 
     @Override
     public void onLocationChanged(Location location) {
-//        LocationManager locationManager = (LocationManager)
-//                getSystemService(Context.LOCATION_SERVICE);
-//        Criteria criteria = new Criteria();
-//
-//        assert locationManager != null;
-//
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            return;
-//        }
-////        Location location = locationManager.getLastKnownLocation(locationManager
-////                .getBestProvider(criteria, false));
-//        double latitude = location.getLatitude();
-//        double longitude = location.getLongitude();
-//        LatLng sydney = new LatLng(latitude, longitude);
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
         mMap.animateCamera(cameraUpdate);
         locationManager.removeUpdates(this);
-
+//        loopStart();
+        Log.d("currentpos", "onLocationChanged: "+location.getLatitude());
+        Toast.makeText(MainActivity.this,String.valueOf(location.getLatitude()), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -395,4 +387,57 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         drawer.closeDrawer(GravityCompat.END);
         return true;
     }
+
+    private void sendLocation(){
+
+    }
+//
+
+    public void loopStart(){
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                 getLocation();   // this method will contain your almost-finished HTTP calls
+                handler.postDelayed(this, 5000);
+            }
+        }, 5000);
+    }
+
+
+
+    private final LocationListener mLocationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(final Location location) {
+
+
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+
+    void getLocation() {
+
+        try {
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
+        }
+        catch(SecurityException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
 }
