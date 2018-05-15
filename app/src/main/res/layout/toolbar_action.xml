@@ -11,7 +11,8 @@ android:layout_height="wrap_content">
     android:background="?attr/colorPrimary"
     android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize">
-        <SearchView
+        <EditText
+            android:id="@+id/citysearch"
             android:background="#fff"
             android:layout_width="280dp"
             android:layout_height="40dp" />
