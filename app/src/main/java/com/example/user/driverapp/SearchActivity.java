@@ -52,7 +52,7 @@ public class SearchActivity extends AppCompatActivity {
                 String txt =searchLocation.getText().toString();
 //                setLocation(txt);
                 searchCityAdapter adapter=new searchCityAdapter(SearchActivity.this,gotolocation(txt));
-
+                Log.d("cityyyy", String.valueOf(gotolocation(txt).size()));
                 resultlist.setAdapter(adapter);
             }
         });
@@ -116,7 +116,7 @@ private void setLocation (String city){
         Geocoder gc=new Geocoder(this);
         List<Address> list=null;
         try {
-            list=gc.getFromLocationName(searchString,10);
+            list=gc.getFromLocationName(searchString,5);
             if (list.size()>0){
 
 //                Address add =list.get(0);

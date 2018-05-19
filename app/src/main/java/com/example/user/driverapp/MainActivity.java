@@ -80,13 +80,13 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
             @Override
             public boolean onLongClick(View v) {
 //
-                Intent intent=new Intent(MainActivity.this,SearchActivity.class);
+                Intent intent=new Intent(MainActivity.this,SearchActivity3.class);
                 startActivity(intent);
                 return false;
             }
         });
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 //        getLocation();
@@ -397,6 +397,8 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
             startActivity(intent);
 
         } else if (id == R.id.nav_share) {
+            Intent intent = new Intent(MainActivity.this, TravelList.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_send) {
 
