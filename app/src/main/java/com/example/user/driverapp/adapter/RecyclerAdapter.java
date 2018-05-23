@@ -70,6 +70,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<View_Holder> implement
             }
         });
 
+
     }
 
     @Override

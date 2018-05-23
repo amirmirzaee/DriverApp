@@ -19,12 +19,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,21 +30,32 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.SearchView;
 import android.widget.Toast;
 
+
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
+
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends RuntimePermissionsActivity implements OnMapReadyCallback, LocationListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -59,34 +68,34 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
     private static final float MIN_DISTANCE = 1000;
     private static final int Time_Between_Two_Back = 2000;
     private long TimeBackPressed;
-    private boolean loop_started;
     private Handler handler = new Handler();
-    private EditText searchView;
+    private String TAG = "man";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
         makeNav();
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         onServies = 0;
         showTraffic = 0;
         moonSun = 0;
 
+//        EditText searchView = findViewById(R.id.citysearch);
 
-        searchView=(EditText)findViewById(R.id.citysearch);
+//        searchView.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View v) {
+////
+//                Intent intent=new Intent(MainActivity.this,SearchActivity3.class);
+//                startActivity(intent);
+//                return false;
+//            }
+//        });
+        searchPanel();
 
-        searchView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-//
-                Intent intent=new Intent(MainActivity.this,SearchActivity3.class);
-                startActivity(intent);
-                return false;
-            }
-        });
-
-            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 //        getLocation();
@@ -105,7 +114,7 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this); //You can also use LocationManager.GPS_PROVIDER and LocationManager.PASSIVE_PROVIDER
 
-//        loopStart();
+        loopStart();
     }
 
     @Override
@@ -114,20 +123,22 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
 
         MainActivity.super.requestAppPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_PERMISSEN_LOCATION);
 
-
-        String  str;
-        Bundle mbundle= getIntent().getExtras();
-        if (mbundle != null) {
-            str = mbundle.getString("locationText");
-            setMark(str);
-        }
+/**
+ * get location string from search activity
+ **/
+//        String  str;
+//        Bundle mbundle= getIntent().getExtras();
+//        if (mbundle != null) {
+//            str = mbundle.getString("locationText");
+//            setMark(str);
+//        }
 
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
                 mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(latLng).title("Marker in Sydney"));
+                mMap.addMarker(new MarkerOptions().position(latLng).title(""));
             }
         });
     }
@@ -147,15 +158,20 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         requestPermission();
     }
 
+
+    /**
+     * if GPS is not enabled open setting
+     */
     public void requestPermission() {
         LocationManager locationManager = (LocationManager)
                 getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
+
 
         assert locationManager != null;
 
-        boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        final boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         if (statusOfGPS) {
+
 //            try {
 //                //set time in mili
 //                Thread.sleep(1000);
@@ -187,18 +203,28 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
             alter.setPositiveButton("ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Intent gpsOptionsIntent = new Intent(
-                            android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    startActivity(gpsOptionsIntent);
+                    LocationManager locationManager1 = (LocationManager)
+                            getSystemService(Context.LOCATION_SERVICE);
+                    boolean statusOfGPS1 = locationManager1.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                    if (!statusOfGPS1) {
+                        Intent gpsOptionsIntent = new Intent(
+                                android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(gpsOptionsIntent);
+                    }
                 }
             });
             alter.setNegativeButton("Calcel", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    finish();
+                    LocationManager locationManager2 = (LocationManager)
+                            getSystemService(Context.LOCATION_SERVICE);
+                    boolean statusOfGPS2 = locationManager2.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                    if (!statusOfGPS2)
+                        finish();
                 }
             });
             alter.show();
+
 
         }
     }
@@ -207,9 +233,6 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
     protected void onResume() {
         super.onResume();
         requestPermission();
-
-
-
 
 
     }
@@ -223,7 +246,6 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         mMap.animateCamera(cameraUpdate);
         locationManager.removeUpdates(this);
 //        loopStart();
-        Log.d("currentpos", "onLocationChanged: " + location.getLatitude());
 
     }
 
@@ -244,12 +266,12 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
 
 
     public void makeNav() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle("");
 
 
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -270,7 +292,7 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         });
 
 
-        final FloatingActionButton traf = (FloatingActionButton) findViewById(R.id.traffic);
+        final FloatingActionButton traf = findViewById(R.id.traffic);
         traf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -293,7 +315,7 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         });
 
 
-        final FloatingActionButton msun = (FloatingActionButton) findViewById(R.id.nightmod);
+        final FloatingActionButton msun = findViewById(R.id.nightmod);
         msun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -329,13 +351,13 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
 //        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
 //                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 //        drawer.addDrawerListener(toggle);
 //        toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -381,7 +403,7 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -408,55 +430,54 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         return true;
     }
 
-    private void sendLocation() {
+//    private void sendLocation() {
+//
+//        double lat = 0;
+//        double lon=0;
+//        Location loc;
+//        LocationManager mlocManager;
+//        String provider;
+//
+//        mlocManager =
+//                (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//
+//
+//        Criteria criteria = new Criteria();
+//        //criteria.setAccuracy(Criteria.ACCURACY_FINE);
+//        criteria.setAccuracy(Criteria.ACCURACY_COARSE); //Try this instead
+//        criteria.setAltitudeRequired(false);
+//        criteria.setBearingRequired(false);
+//        criteria.setCostAllowed(true);
+//        criteria.setPowerRequirement(Criteria.POWER_LOW);
+//        provider = mlocManager.getBestProvider(criteria, true);
+//        if (provider != null) {
+//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                // TODO: Consider calling
+//                //    ActivityCompat#requestPermissions
+//                // here to request the missing permissions, and then overriding
+//                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                //                                          int[] grantResults)
+//                // to handle the case where the user grants the permission. See the documentation
+//                // for ActivityCompat#requestPermissions for more details.
+//                return;
+//            }
+//            loc = mlocManager.getLastKnownLocation(provider);
+//
+//            lat = loc.getLatitude();
+//            lon = loc.getLongitude();
+//        }
+//        Toast.makeText(MainActivity.this,lat+"***"+lon, Toast.LENGTH_SHORT).show();
+//    }
 
-        double lat = 0;
-        double lon=0;
-        Location loc;
-        LocationManager mlocManager;
-        String provider;
 
-        mlocManager =
-                (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-
-        Criteria criteria = new Criteria();
-        //criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setAccuracy(Criteria.ACCURACY_COARSE); //Try this instead
-        criteria.setAltitudeRequired(false);
-        criteria.setBearingRequired(false);
-        criteria.setCostAllowed(true);
-        criteria.setPowerRequirement(Criteria.POWER_LOW);
-        provider = mlocManager.getBestProvider(criteria, true);
-        if (provider != null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            loc = mlocManager.getLastKnownLocation(provider);
-
-            lat = loc.getLatitude();
-            lon = loc.getLongitude();
-        }
-        Toast.makeText(MainActivity.this,lat+"***"+lon, Toast.LENGTH_SHORT).show();
-    }
-
-
-    public void loopStart(){
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                sendLocation();
-                handler.postDelayed(this, 5000);
-            }
-        }, 5000);
-    }
-
+//    public void loopStart(){
+//        handler.postDelayed(new Runnable() {
+//            public void run() {
+//                sendLocation();
+//                handler.postDelayed(this, 5000);
+//            }
+//        }, 5000);
+//    }
 
 
 //    private final LocationListener mLocationListener = new LocationListener() {
@@ -495,34 +516,138 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
 //
 //    }
 
-private Address gotolocation(String searchString){
-    Geocoder gc=new Geocoder(this);
-    List<Address> list=null;
-    try {
-        list=gc.getFromLocationName(searchString,1);
-        if (list.size()>0){
+    /**
+     *get the city name and convert to latlang
+     */
 
-            Address add =list.get(0);
-            Log.d("cityyyy",list.get(0).toString());
-            return add;
-        }
-        else
+    private Address gotolocation(String searchString) {
+        Geocoder gc = new Geocoder(this);
+        List<Address> list;
+        try {
+            list = gc.getFromLocationName(searchString, 1);
+            if (list.size() > 0) {
+
+                Address add = list.get(0);
+                Log.d("cityyyy", list.get(0).toString());
+                return add;
+            } else
+                return null;
+        } catch (IOException e) {
+            e.printStackTrace();
             return null;
-    } catch (IOException e) {
-        e.printStackTrace();
-        return null;
+        }
     }
-}
 
-private void setMark(String city){
+    /**
+     * get the city name searched and set marker
+     */
+    private void setMark(String city) {
 
-    Address add=gotolocation(city);
-if (add!=null){
-    Log.d("cityyyy",add.getAddressLine(0));
-                LatLng distination =new LatLng(add.getLatitude(),add.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(distination,15));
-                mMap.addMarker(new MarkerOptions().position(distination).title(city));
-}
+        Address add = gotolocation(city);
+        if (add != null) {
+//            Log.d("cityyyy", add.getAddressLine(0));
+            LatLng distination = new LatLng(add.getLatitude(), add.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(distination, 15));
+            mMap.addMarker(new MarkerOptions().position(distination).title(city));
+        }
 
-}
+    }
+
+    private void searchPanel() {
+        final PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+
+
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+//                Log.i(TAG, "Place: " + place.getName());
+//                Log.i(TAG, "Place2121: " + place);
+                Objects.requireNonNull(autocompleteFragment.getView()).setBackgroundColor(Color.WHITE);
+                setMark(place.getName().toString());
+
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);
+            }
+        });
+
+//    try {
+//        autocompleteFragment.setBoundsBias(new LatLngBounds(
+//                new LatLng(35.735670, 51.614763),
+//                new LatLng(35.821442, 50.918683)));
+//
+//        AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+//                .setCountry("IR")
+//                .build();
+//        autocompleteFragment.setFilter(typeFilter);
+//
+//        Intent intent =
+//                new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+//                        .setFilter(typeFilter)
+//                        .build(this);
+//
+//
+//        int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+//        startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+//    } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+//        // TODO: Handle the error.
+//    }
+    }
+
+    /**
+     * call the update location function in the loop
+     */
+    public void loopStart() {
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                getLocation();   // this method will contain your almost-finished HTTP calls
+                handler.postDelayed(this, 5000);
+            }
+        }, 5000);
+    }
+
+    /**
+     * get current location and sed to server at 5000 milli Second
+     */
+    void getLocation() {
+
+
+        try {
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            assert locationManager != null;
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    Log.d("currentpos", "onLocationChanged: " + location.getLatitude());
+                    Toast.makeText(MainActivity.this, String.valueOf(location.getLatitude()), Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+
+                }
+            });
+        }
+        catch(SecurityException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

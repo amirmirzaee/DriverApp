@@ -12,5 +12,6 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="show_Traffic">نمایش ترافیک</string>
+    <string name="show_detail">نمایش جزئیات</string>
 
 </resources>

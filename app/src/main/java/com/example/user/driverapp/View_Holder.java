@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
@@ -26,16 +27,20 @@ public class View_Holder extends RecyclerView.ViewHolder implements OnMapReadyCa
     private GoogleMap gmap;
     private Context context;
 
-    public TextView sorseFrag, distinationFrag;
+    public TextView sorseFrag, distinationFrag,detail;
     public Button navFrag, ditalFrag, startFrag;
+    public CardView cardView;
 
     public View_Holder(View itemView,FragmentActivity context) {
         super(itemView);
         sorseFrag = (TextView) itemView.findViewById(R.id.sorsfrag);
         distinationFrag = (TextView) itemView.findViewById(R.id.distinationfrag);
-        navFrag = (Button) itemView.findViewById(R.id.navFrag);
+//        detail = (TextView) itemView.findViewById(R.id.detail);
+//        navFrag = (Button) itemView.findViewById(R.id.navFrag);
         ditalFrag = (Button) itemView.findViewById(R.id.ditalFrag);
-        startFrag = (Button) itemView.findViewById(R.id.startFrag);
+//        startFrag = (Button) itemView.findViewById(R.id.startFrag);
+
+        cardView=(CardView)itemView.findViewById(R.id.card_view);
 
 
     }

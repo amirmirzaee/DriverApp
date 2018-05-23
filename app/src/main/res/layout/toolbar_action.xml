@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:layout_width="match_parent"
-android:layout_height="wrap_content">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
 
     <android.support.v7.widget.Toolbar
-    android:id="@+id/toolbar"
-    android:background="?attr/colorPrimary"
-    android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
-        <EditText
-            android:id="@+id/citysearch"
-            android:background="#fff"
-            android:layout_width="280dp"
-            android:layout_height="40dp" />
+        android:id="@+id/toolbar"
+
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary">
+        <RelativeLayout
+            app:titleTextColor="#fff"
+            android:gravity="start|center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <!--<EditText-->
+        <!--android:id="@+id/citysearch"-->
+        <!--android:background="#fff"-->
+        <!--android:layout_width="280dp"-->
+        <!--android:layout_height="40dp" />-->
+
+        <fragment
+            android:id="@+id/place_autocomplete_fragment"
+            android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+        </fragment>
+        </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 <include layout="@layout/content_main2"/>
 </LinearLayout>

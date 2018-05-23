@@ -21,7 +21,6 @@ import java.util.Locale;
 
 public class SearchActivity3 extends AppCompatActivity {
     private String TAG = "man";
-    private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +32,6 @@ public class SearchActivity3 extends AppCompatActivity {
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
 
-
-
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
 
 
@@ -43,7 +40,7 @@ public class SearchActivity3 extends AppCompatActivity {
                 // TODO: Get info about the selected place.
                 Log.i(TAG, "Place: " + place.getName());
                 Log.i(TAG, "Place2121: " + place);
-                Toast.makeText(SearchActivity3.this, "hiiiii", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
@@ -69,10 +66,9 @@ public class SearchActivity3 extends AppCompatActivity {
                             .build(this);
 
 
+            int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
             startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-        } catch (GooglePlayServicesRepairableException e) {
-            // TODO: Handle the error.
-        } catch (GooglePlayServicesNotAvailableException e) {
+        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
             // TODO: Handle the error.
         }
     }
