@@ -30,6 +30,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 
@@ -70,6 +71,7 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
     private long TimeBackPressed;
     private Handler handler = new Handler();
     private String TAG = "man";
+    private ImageView imageView;
 
 
     @Override
@@ -82,18 +84,14 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         showTraffic = 0;
         moonSun = 0;
 
-//        EditText searchView = findViewById(R.id.citysearch);
-
-//        searchView.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View v) {
-////
-//                Intent intent=new Intent(MainActivity.this,SearchActivity3.class);
-//                startActivity(intent);
-//                return false;
-//            }
-//        });
+imageView= findViewById(R.id.imSearch);
+imageView.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
         searchPanel();
+    }
+});
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -114,7 +112,12 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this); //You can also use LocationManager.GPS_PROVIDER and LocationManager.PASSIVE_PROVIDER
 
-        loopStart();
+//        loopStart();
+    }
+
+    protected void onDestroy() {
+        super.onDestroy();
+
     }
 
     @Override
@@ -122,6 +125,9 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         mMap = googleMap;
 
         MainActivity.super.requestAppPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_PERMISSEN_LOCATION);
+
+        Intent intent=new Intent(this,LocationService.class);
+        startService(intent);
 
 /**
  * get location string from search activity
@@ -142,14 +148,13 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
             }
         });
     }
-
     public void onPermissionsGranted(int requestCode) {
-        if (requestCode == ACCESS_PERMISSEN_LOCATION)
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                return;
-            }
-        mMap.setMyLocationEnabled(true);
+            if (requestCode == ACCESS_PERMISSEN_LOCATION)
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    return;
+                }
+            mMap.setMyLocationEnabled(true);
 
     }
 
@@ -205,6 +210,7 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
                 public void onClick(DialogInterface dialog, int which) {
                     LocationManager locationManager1 = (LocationManager)
                             getSystemService(Context.LOCATION_SERVICE);
+                    assert locationManager1 != null;
                     boolean statusOfGPS1 = locationManager1.isProviderEnabled(LocationManager.GPS_PROVIDER);
                     if (!statusOfGPS1) {
                         Intent gpsOptionsIntent = new Intent(
@@ -218,6 +224,7 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
                 public void onClick(DialogInterface dialog, int which) {
                     LocationManager locationManager2 = (LocationManager)
                             getSystemService(Context.LOCATION_SERVICE);
+                    assert locationManager2 != null;
                     boolean statusOfGPS2 = locationManager2.isProviderEnabled(LocationManager.GPS_PROVIDER);
                     if (!statusOfGPS2)
                         finish();
@@ -411,6 +418,7 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
             Intent intent = new Intent(MainActivity.this, TravelList.class);
             startActivity(intent);
         } else if (id == R.id.nav_gallery) {
+            stopService(new Intent(MainActivity.this, LocationService.class));
 
         } else if (id == R.id.nav_slideshow) {
 
@@ -566,7 +574,7 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
                 // TODO: Get info about the selected place.
 //                Log.i(TAG, "Place: " + place.getName());
 //                Log.i(TAG, "Place2121: " + place);
-                Objects.requireNonNull(autocompleteFragment.getView()).setBackgroundColor(Color.WHITE);
+//                Objects.requireNonNull(autocompleteFragment.getView()).setBackgroundColor(Color.WHITE);
                 setMark(place.getName().toString());
 
             }
@@ -578,27 +586,27 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
             }
         });
 
-//    try {
-//        autocompleteFragment.setBoundsBias(new LatLngBounds(
-//                new LatLng(35.735670, 51.614763),
-//                new LatLng(35.821442, 50.918683)));
-//
-//        AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-//                .setCountry("IR")
-//                .build();
-//        autocompleteFragment.setFilter(typeFilter);
-//
-//        Intent intent =
-//                new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-//                        .setFilter(typeFilter)
-//                        .build(this);
-//
-//
-//        int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
-//        startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-//    } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-//        // TODO: Handle the error.
-//    }
+    try {
+        autocompleteFragment.setBoundsBias(new LatLngBounds(
+                new LatLng(35.735670, 51.614763),
+                new LatLng(35.821442, 50.918683)));
+
+        AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                .setCountry("IR")
+                .build();
+        autocompleteFragment.setFilter(typeFilter);
+
+        Intent intent =
+                new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                        .setFilter(typeFilter)
+                        .build(this);
+
+
+        int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+        startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+    } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+        // TODO: Handle the error.
+    }
     }
 
     /**
@@ -608,7 +616,7 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         handler.postDelayed(new Runnable() {
             public void run() {
                 getLocation();   // this method will contain your almost-finished HTTP calls
-                handler.postDelayed(this, 5000);
+//                handler.postDelayed(this, 5000);
             }
         }, 5000);
     }

@@ -56,7 +56,8 @@
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity android:name=".SearchActivity2" />
         <activity android:name=".SearchActivity3" />
-        <activity android:name=".TravelDetailActivity"></activity>
+        <activity android:name=".TravelDetailActivity"/>
+        <service android:name=".LocationService"/>
     </application>
 
 </manifest>
