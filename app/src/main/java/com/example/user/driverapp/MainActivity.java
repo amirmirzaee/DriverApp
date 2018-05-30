@@ -1,6 +1,7 @@
 package com.example.user.driverapp;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,7 +14,10 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -126,8 +130,6 @@ imageView.setOnClickListener(new View.OnClickListener() {
 
         MainActivity.super.requestAppPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_PERMISSEN_LOCATION);
 
-        Intent intent=new Intent(this,LocationService.class);
-        startService(intent);
 
 /**
  * get location string from search activity
@@ -156,6 +158,7 @@ imageView.setOnClickListener(new View.OnClickListener() {
                 }
             mMap.setMyLocationEnabled(true);
 
+
     }
 
     @Override
@@ -168,73 +171,11 @@ imageView.setOnClickListener(new View.OnClickListener() {
      * if GPS is not enabled open setting
      */
     public void requestPermission() {
-        LocationManager locationManager = (LocationManager)
-                getSystemService(Context.LOCATION_SERVICE);
 
 
-        assert locationManager != null;
-
-        final boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        if (statusOfGPS) {
-
-//            try {
-//                //set time in mili
-//                Thread.sleep(1000);
-//
-//            }catch (Exception e){
-//                e.printStackTrace();
-//            }
-//            Toast.makeText(this, "sssssssss", Toast.LENGTH_SHORT).show();
-//
-//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                // TODO: Consider calling
-//                //    ActivityCompat#requestPermissions
-//                // here to request the missing permissions, and then overriding
-//                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//                //                                          int[] grantResults)
-//                // to handle the case where the user grants the permission. See the documentation
-//                // for ActivityCompat#requestPermissions for more details.
-//                return;
-//            }
-//            Location location = locationManager.getLastKnownLocation(locationManager
-//                    .getBestProvider(criteria, false));
-//            double latitude = location.getLatitude();
-//            double longitude = location.getLongitude();
-//            Log.d("pos2",latitude+"   "+longitude);
-        } else {
-            AlertDialog.Builder alter = new AlertDialog.Builder(MainActivity.this);
-            alter.setTitle("GPS");
-            alter.setMessage("please turn on GPS");
-            alter.setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    LocationManager locationManager1 = (LocationManager)
-                            getSystemService(Context.LOCATION_SERVICE);
-                    assert locationManager1 != null;
-                    boolean statusOfGPS1 = locationManager1.isProviderEnabled(LocationManager.GPS_PROVIDER);
-                    if (!statusOfGPS1) {
-                        Intent gpsOptionsIntent = new Intent(
-                                android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        startActivity(gpsOptionsIntent);
-                    }
-                }
-            });
-            alter.setNegativeButton("Calcel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    LocationManager locationManager2 = (LocationManager)
-                            getSystemService(Context.LOCATION_SERVICE);
-                    assert locationManager2 != null;
-                    boolean statusOfGPS2 = locationManager2.isProviderEnabled(LocationManager.GPS_PROVIDER);
-                    if (!statusOfGPS2)
-                        finish();
-                }
-            });
-            alter.show();
-
+        NETDialog();
 
         }
-    }
 
     @Override
     protected void onResume() {
@@ -522,7 +463,7 @@ imageView.setOnClickListener(new View.OnClickListener() {
 //            e.printStackTrace();
 //        }
 //
-//    }
+//    }defe
 
     /**
      *get the city name and convert to latlang
@@ -655,6 +596,93 @@ imageView.setOnClickListener(new View.OnClickListener() {
         }
         catch(SecurityException e) {
             e.printStackTrace();
+        }
+
+    }
+
+    private void GpsDialog(){
+        LocationManager locationManager = (LocationManager)
+                getSystemService(Context.LOCATION_SERVICE);
+
+
+        assert locationManager != null;
+
+        final boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if (statusOfGPS) {
+            Intent intent=new Intent(this,LocationService.class);
+            startService(intent);
+
+        } else {
+            AlertDialog.Builder alter = new AlertDialog.Builder(MainActivity.this);
+            setFinishOnTouchOutside(false);
+            alter.setTitle("GPS");
+            alter.setMessage("please turn on GPS");
+            alter.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    LocationManager locationManager1 = (LocationManager)
+                            getSystemService(Context.LOCATION_SERVICE);
+                    assert locationManager1 != null;
+                    boolean statusOfGPS1 = locationManager1.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                    if (!statusOfGPS1) {
+                        Intent gpsOptionsIntent = new Intent(
+                                android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(gpsOptionsIntent);
+                    }
+
+                }
+            });
+            alter.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    LocationManager locationManager2 = (LocationManager)
+                            getSystemService(Context.LOCATION_SERVICE);
+                    assert locationManager2 != null;
+                    boolean statusOfGPS2 = locationManager2.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                    if (!statusOfGPS2)
+                        finish();
+                }
+            });
+            alter.show();
+
+
+        }
+
+    }
+    private void NETDialog(){
+        boolean connected = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        final boolean netchek=(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED);
+        if(netchek) {
+            GpsDialog();
+            //we are connected to a network
+            connected = true;
+        }
+        else {
+            AlertDialog.Builder alter = new AlertDialog.Builder(MainActivity.this);
+            setFinishOnTouchOutside(false);
+            alter.setTitle("INTERNET");
+            alter.setMessage("please turn on INTERNET");
+            alter.setPositiveButton("setting", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (!netchek){
+                        Intent netIntent = new Intent(Intent.ACTION_MAIN);
+                        netIntent.setClassName("com.android.settings", "com.android.settings.wifi.WifiSettings");
+                        startActivity(netIntent);
+                    }
+                }
+            });
+            alter.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (!netchek)
+                        finish();
+                }
+            });
+            alter.show();
+            connected = false;
         }
 
     }

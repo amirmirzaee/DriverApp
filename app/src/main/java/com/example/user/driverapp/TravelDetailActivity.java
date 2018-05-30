@@ -16,7 +16,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class TravelDetailActivity extends AppCompatActivity  implements OnMapReadyCallback {
 
     private TextView sorsAddress,disAddress;
-    private GoogleMap mMap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,8 +31,8 @@ public class TravelDetailActivity extends AppCompatActivity  implements OnMapRea
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-       Marker m1 , m2;
-        mMap = googleMap;
+//       Marker m1 , m2;
+        GoogleMap mMap = googleMap;
         Bundle bundle = getIntent().getParcelableExtra("position");
         if (bundle != null) {
 
@@ -42,8 +42,10 @@ public class TravelDetailActivity extends AppCompatActivity  implements OnMapRea
 
 //        LatLng d2 = new LatLng(35.736532, 51.441817);
 
-        mMap.addMarker(new MarkerOptions().position(sourceLocat).title("Marker in Sydney"));
-        mMap.addMarker(new MarkerOptions().position(disLocat).title("Marker in Sydney"));
+            assert sourceLocat != null;
+            mMap.addMarker(new MarkerOptions().position(sourceLocat).title("Marker in Sydney"));
+            assert disLocat != null;
+            mMap.addMarker(new MarkerOptions().position(disLocat).title("Marker in Sydney"));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,15));
             LatLngBounds bounds = new LatLngBounds.Builder()
                     .include(sourceLocat)
