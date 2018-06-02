@@ -29,12 +29,16 @@ public class LoginActivity extends AppCompatActivity {
 //    private ImageView barbanetIcon;
     private EditText tellNumber,pass;
     private Button loginbtn;
-
+    private SharedPreferences shper;
+    private String tok="tok";
+    private String islogin="islogin";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+
 
         bindObject();
 
@@ -61,8 +65,8 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void loginRequset(){
 
-        SharedPreferences sharedPreferences = null;
-        ApiInterface apiInterface= ApiClient.getClient(sharedPreferences).create(ApiInterface.class);
+        shper=getSharedPreferences(tok,MODE_PRIVATE);
+        ApiInterface apiInterface= ApiClient.getClient(shper).create(ApiInterface.class);
 
         Call<UserResponse> call=apiInterface.getLogin(userPass());
         call.enqueue(new Callback<UserResponse>() {
@@ -70,8 +74,13 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
 
                 if (response.body().getError()==null){
+
                    Intent intent=new Intent(LoginActivity.this,MainActivity.class);
-                   startActivity(intent);
+                   SharedPreferences.Editor shedit=shper.edit();
+                   shedit.putString(tok,response.body().getUser().getAccessToken());
+                   shedit.putBoolean(islogin,true);
+                   shedit.apply();
+                    startActivity(intent);
                }
             }
 

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -38,6 +39,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 
+import com.example.user.driverapp.model.user.LogoutUser;
+import com.example.user.driverapp.webService.ApiClient;
+import com.example.user.driverapp.webService.ApiInterface;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
@@ -62,6 +66,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends RuntimePermissionsActivity implements OnMapReadyCallback, LocationListener, NavigationView.OnNavigationItemSelectedListener {
 
     private GoogleMap mMap;
@@ -76,6 +84,8 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
     private Handler handler = new Handler();
     private String TAG = "man";
     private ImageView imageView;
+    private  String tok="tok";
+    private  String islogin="islogin";
 
 
     @Override
@@ -87,6 +97,7 @@ public class MainActivity extends RuntimePermissionsActivity implements OnMapRea
         onServies = 0;
         showTraffic = 0;
         moonSun = 0;
+
 
 imageView= findViewById(R.id.imSearch);
 imageView.setOnClickListener(new View.OnClickListener() {
@@ -372,7 +383,28 @@ imageView.setOnClickListener(new View.OnClickListener() {
             startActivity(intent);
 
         } else if (id == R.id.nav_send) {
+            final SharedPreferences sharedPreferences=getSharedPreferences(tok,MODE_PRIVATE);
+            ApiInterface apiInterface= ApiClient.getClient(sharedPreferences).create(ApiInterface.class);
+            Call<LogoutUser> call=apiInterface.logoutUser();
+            call.enqueue(new Callback<LogoutUser>() {
+                @Override
+                public void onResponse(Call<LogoutUser> call, Response<LogoutUser> response) {
+                    if(response.body().getObject()=="success");{
 
+                        SharedPreferences.Editor sedite=sharedPreferences.edit();
+                        sedite.putString(tok,"");
+                        sedite.putBoolean(islogin,false);
+                        sedite.apply();
+                        Intent intent=new Intent(MainActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<LogoutUser> call, Throwable t) {
+                    Toast.makeText(MainActivity.this, "خطایی روی داده است", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         drawer.closeDrawer(GravityCompat.END);

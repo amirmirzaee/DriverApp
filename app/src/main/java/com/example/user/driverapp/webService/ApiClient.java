@@ -13,9 +13,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class ApiClient {
-    private static final String BACE_ULR = "http://192.168.7.7:8080/Barbanet/";
+    private static final String BACE_ULR = "http://192.168.7.250:8080/Barbanet/";
     private static Retrofit retrofit = null;
     private OkHttpClient okHttpClient;
+
 
     public static Retrofit getClient(SharedPreferences sharedPreferences) {
         if (retrofit == null) {
@@ -29,7 +30,15 @@ public class ApiClient {
     }
 
 
-    private static OkHttpClient okHttpClient(SharedPreferences sharedPreferences) {
+    private static OkHttpClient okHttpClient(final SharedPreferences sharedPreferences) {
+        String acssesToken;
+        if (sharedPreferences.contains("tok")){
+         acssesToken=sharedPreferences.getString("tok"," ");
+        }
+        else
+        {
+            acssesToken=" ";
+        }
        return new OkHttpClient.Builder()
                 .connectTimeout(60 , TimeUnit.SECONDS)
                 .readTimeout(60, TimeUnit.SECONDS)
@@ -40,7 +49,7 @@ public class ApiClient {
                                 .newBuilder()
                                 .addHeader("CSN", "100000000000000"/*prefStorage.readMessage(ConstantManager.DEVICE_INF0O.IMEI.value())*/)
                                 .addHeader("CTY" , "m")
-//                                .addHeader("Authorization" , "Bearer " +prefStorage.readMessage(ConstantManager.PUBLIC.ACCESS_TOKEN.value()))
+                                .addHeader("Authorization" , "Bearer " +sharedPreferences.getString("tok"," "))
                                 .build());
                     }
                 })
