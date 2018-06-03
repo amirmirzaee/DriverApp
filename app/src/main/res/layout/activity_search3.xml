@@ -20,7 +20,7 @@
         android:layout_margin="@dimen/fab_margin"
         android:layout_marginBottom="28dp"
         android:layout_marginEnd="40dp"
-        app:backgroundTint="#b3b0b0"
+        app:backgroundTint="@color/soundSearchBackgrand"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/stat_sys_headset"

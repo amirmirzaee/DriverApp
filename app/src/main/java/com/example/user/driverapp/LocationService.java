@@ -78,8 +78,8 @@ public class LocationService extends Service implements LocationListener {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
-                    Log.d("currentpos", "onLocationChanged: " + location.getLatitude());
-//                    Toast.makeText(this, String.valueOf(location.getLatitude()), Toast.LENGTH_SHORT).show();
+//                    Log.d("currentpos", "onLocationChanged: " + location.getLatitude());
+//
                     Toast.makeText(LocationService.this, String.valueOf(location.getLatitude()), Toast.LENGTH_SHORT).show();
                 }
 

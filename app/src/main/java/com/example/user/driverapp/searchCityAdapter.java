@@ -46,14 +46,12 @@ public class searchCityAdapter extends BaseAdapter {
     public View getView(int i, View convertView, ViewGroup parent) {
         @SuppressLint("ViewHolder") View rowView = LayoutInflater.from(mcontext).inflate(R.layout.search_city_layout, parent, false);
         TextView cityName,cityDitale;
-        cityName=(TextView)rowView.findViewById(R.id.cityName);
-        cityDitale=(TextView)rowView.findViewById(R.id.cityDitail);
+        cityName=rowView.findViewById(R.id.cityName);
+        cityDitale=rowView.findViewById(R.id.cityDitail);
         Address add =cityList.get(i);
         if(add!=null) {
         cityName.setText(add.getFeatureName());
             cityDitale.setText(add.getAddressLine(0));
-            Log.d("cityyyy", add.toString());
-            Log.d("cityyyy", "1");
         }
         return rowView;
     }

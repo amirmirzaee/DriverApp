@@ -9,17 +9,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.example.user.driverapp.MainActivity;
 import com.example.user.driverapp.R;
-import com.example.user.driverapp.TravelDetailActivity;
-import com.example.user.driverapp.TravelList;
+import com.example.user.driverapp.activity.TravelDetailActivity;
 import com.example.user.driverapp.View_Holder;
 import com.example.user.driverapp.model.job_list_model;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +52,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<View_Holder> implement
     public void onBindViewHolder(@NonNull final View_Holder holder, final int position) {
         holder.sorseFrag.setText(list.get(position).sorse);
         holder.distinationFrag.setText(list.get(position).distin);
-        holder.ditalFrag.setOnClickListener(new View.OnClickListener() {
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, TravelDetailActivity.class);
@@ -66,9 +62,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<View_Holder> implement
                 args.putParcelable("latlangsaddress", list.get(position).sourcePos);
                 args.putParcelable("latlangdaddress", list.get(position).disPos);
                 intent.putExtra("position",args);
-               context. startActivity(intent);
+                context. startActivity(intent);
             }
         });
+//        holder.ditalFrag.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
 
 
     }

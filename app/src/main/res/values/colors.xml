@@ -7,5 +7,19 @@
     <color name="coloroff">#ff4a42</color>
     <color name="trafficoff">#e1e0e0</color>
     <color name="trafficon">#4a4ce6</color>
+    <color name="soundSearchBackgrand">#b3b0b0</color>
+    <color name="magnifierBakColor">#b3b0b0</color>
+    <color name="splashBakgrand">#ffff</color>
+    <color name="listBackcolor">#ffff</color>
+    <color name="haederBackcolor">#48a6b9</color>
+    <color name="listItemBackColor">#ffff</color>
+    <color name="listItemheareColor">#38c2fc</color>
+    <color name="enableService">#7fd769</color>
+    <color name="disableService">#ff4a42</color>
+    <color name="show_Traffic">#4a4ce6</color>
+    <color name="hide_traffic">#e1e0e0</color>
+    <color name="progressBar_color">#0cac92</color>
+    <color name="colorTextPrimary">#505e70</color>
+    <color name="cardViewHeader">#d6f7f3</color>
 
 </resources>

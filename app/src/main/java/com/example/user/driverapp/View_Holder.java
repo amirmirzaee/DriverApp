@@ -23,25 +23,20 @@ import java.util.zip.Inflater;
 
 
 public class View_Holder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
-    public  SupportMapFragment mapFragment;
+    public SupportMapFragment mapFragment;
     private GoogleMap gmap;
     private Context context;
 
-    public TextView sorseFrag, distinationFrag,detail;
-    public Button navFrag, ditalFrag, startFrag;
+    public TextView  distinationFrag, detail;
+//    public Button navFrag, ditalFrag, startFrag;
     public CardView cardView;
+    public com.example.user.driverapp.customView.NormalTextView sorseFrag;
 
-    public View_Holder(View itemView,FragmentActivity context) {
+    public View_Holder(View itemView, FragmentActivity context) {
         super(itemView);
-        sorseFrag = (TextView) itemView.findViewById(R.id.sorsfrag);
-        distinationFrag = (TextView) itemView.findViewById(R.id.distinationfrag);
-//        detail = (TextView) itemView.findViewById(R.id.detail);
-//        navFrag = (Button) itemView.findViewById(R.id.navFrag);
-        ditalFrag = (Button) itemView.findViewById(R.id.ditalFrag);
-//        startFrag = (Button) itemView.findViewById(R.id.startFrag);
-
-        cardView=(CardView)itemView.findViewById(R.id.card_view);
-
+        sorseFrag = itemView.findViewById(R.id.sorsfrag);
+        distinationFrag = itemView.findViewById(R.id.distinationfrag);
+        cardView = itemView.findViewById(R.id.card_view);
 
     }
 

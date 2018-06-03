@@ -1,10 +1,11 @@
-package com.example.user.driverapp;
+package com.example.user.driverapp.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.example.user.driverapp.R;
 import com.example.user.driverapp.adapter.RecyclerAdapter;
 import com.example.user.driverapp.model.job_list_model;
 import com.google.android.gms.maps.model.LatLng;

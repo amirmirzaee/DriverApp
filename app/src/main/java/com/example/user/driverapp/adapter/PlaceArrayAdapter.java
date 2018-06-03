@@ -1,6 +1,7 @@
 package com.example.user.driverapp.adapter;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
@@ -55,6 +56,7 @@ public class PlaceArrayAdapter extends ArrayAdapter<PlaceArrayAdapter.PlaceAutoc
     }
 
 
+    @NonNull
     @Override
     public Filter getFilter() {
         Filter filter = new Filter() {

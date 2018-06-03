@@ -11,16 +11,9 @@
     android:layout_height="wrap_content"
     android:layout_centerHorizontal="true"
     android:layout_marginTop="50dp"
-    android:drawableRight="@drawable/ic_room_black_24dp"
-    android:hint="Enter Place Here" />
+    android:drawableEnd="@drawable/ic_room_black_24dp"
+    android:hint="@string/searchHint" />
 
-<!--<ImageView-->
-<!--android:layout_width="wrap_content"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:layout_alignParentEnd="true"-->
-<!--android:layout_alignParentRight="true"-->
-<!--android:layout_below="@+id/autoCompleteTextView"-->
-<!--android:src="@drawable/powered_by_google_light" />-->
 
 <TextView
 android:id="@+id/select"
@@ -30,8 +23,9 @@ android:layout_alignParentLeft="true"
 android:layout_alignParentStart="true"
 android:layout_below="@+id/autoCompleteTextView"
 android:layout_marginTop="20dp"
-android:text="Selected Place:"
-android:textStyle="bold" />
+android:text="@string/selected_place"
+android:textStyle="bold"
+    tools:ignore="RtlHardcoded" />
 
 
 <TextView
@@ -41,7 +35,8 @@ android:layout_height="wrap_content"
 android:layout_alignParentLeft="true"
 android:layout_alignParentStart="true"
 android:layout_below="@+id/select"
-android:layout_marginTop="20dp" />
+android:layout_marginTop="20dp"
+    tools:ignore="RtlHardcoded" />
 
 
     </RelativeLayout>

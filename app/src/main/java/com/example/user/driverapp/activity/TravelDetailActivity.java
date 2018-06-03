@@ -1,9 +1,10 @@
-package com.example.user.driverapp;
+package com.example.user.driverapp.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.example.user.driverapp.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -31,7 +32,7 @@ public class TravelDetailActivity extends AppCompatActivity  implements OnMapRea
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-//       Marker m1 , m2;
+
         GoogleMap mMap = googleMap;
         Bundle bundle = getIntent().getParcelableExtra("position");
         if (bundle != null) {
@@ -40,12 +41,12 @@ public class TravelDetailActivity extends AppCompatActivity  implements OnMapRea
         LatLng sourceLocat = bundle.getParcelable("latlangsaddress");
         LatLng disLocat = bundle.getParcelable("latlangdaddress");
 
-//        LatLng d2 = new LatLng(35.736532, 51.441817);
+
 
             assert sourceLocat != null;
-            mMap.addMarker(new MarkerOptions().position(sourceLocat).title("Marker in Sydney"));
+            mMap.addMarker(new MarkerOptions().position(sourceLocat).title("Marker  "));
             assert disLocat != null;
-            mMap.addMarker(new MarkerOptions().position(disLocat).title("Marker in Sydney"));
+            mMap.addMarker(new MarkerOptions().position(disLocat).title("Marker  "));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,15));
             LatLngBounds bounds = new LatLngBounds.Builder()
                     .include(sourceLocat)
